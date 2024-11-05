@@ -13,6 +13,7 @@ public class InDoorNav : MonoBehaviour
     [SerializeField] private GameObject trackedImagePrefab;
     [SerializeField] private LineRenderer line;
     [SerializeField] private float therohold;
+    [SerializeField] private PlayerPositionMarker playerPositionMarker;
 
     private List<NavigationTarget> navigationTargets = new List<NavigationTarget>();
     private NavMeshSurface navMeshSurface;
@@ -61,12 +62,16 @@ public class InDoorNav : MonoBehaviour
             navigationTargets.Clear();
             navigationTargets = navigationBase.transform.GetComponentsInChildren<NavigationTarget>().ToList();
             navMeshSurface = navigationBase.transform.GetComponentInChildren<NavMeshSurface>();
+
+            // Send transform data to PlayerPositionMarker
+            playerPositionMarker.SetNavigationBaseTransform(navigationBase.transform);
         }
 
         foreach (var updatedImage in eventArgs.updated)
         {
             navigationBase.transform.SetPositionAndRotation(updatedImage.pose.position, Quaternion.Euler(0, updatedImage.pose.rotation.eulerAngles.y, 0));
-
+            // Send updated transform data to PlayerPositionMarker
+            playerPositionMarker.SetNavigationBaseTransform(navigationBase.transform);
         }
 
         foreach (var removedImage in eventArgs.removed)
